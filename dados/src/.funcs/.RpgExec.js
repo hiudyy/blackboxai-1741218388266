@@ -13,61 +13,74 @@ const achievementSystem = require('./.rpg/achievementSystem.js');
 const dungeonSystem = require('./.rpg/dungeonSystem.js');
 const raidSystem = require('./.rpg/raidSystem.js');
 const bossSystem = require('./.rpg/bossSystem.js');
+const battleSystem = require('./.rpg/battleSystem.js');
 
 // Organization Systems
 const factionSystem = require('./.rpg/factionSystem.js');
 const territorySystem = require('./.rpg/territorySystem.js');
 const gangSystem = require('./.rpg/gangSystem.js');
+const clanSystem = require('./.rpg/clanSystem.js');
+const petSystem = require('./.rpg/petSystem.js');
 
 // Economy Systems
 const investmentSystem = require('./.rpg/investmentSystem.js');
 const casinoSystem = require('./.rpg/casinoSystem.js');
 const shopSystem = require('./.rpg/shopSystem.js');
+const economySystem = require('./.rpg/economySystem.js');
 
 // Character Systems
 const classSystem = require('./.rpg/classSystem.js');
 const careerSystem = require('./.rpg/careerSystem.js');
+const professionSystem = require('./.rpg/professionSystem.js');
 
 // Event System
-const randomEventsSystem = require('./.rpg/randomEventsSystem.js');
+const eventSystem = require('./.rpg/eventSystem.js');
 
 // Helper Functions
 const { playerExists, getPlayer, savePlayer, formatProfile, createPlayer } = require('./.rpg/rpgFunctions.js');
 
-// Importar sistemas
-const miningSystem = require('./.rpg/miningSystem.js');
-const farmingSystem = require('./.rpg/farmingSystem.js');
-const fishingSystem = require('./.rpg/fishingSystem.js');
-const cookingSystem = require('./.rpg/cookingSystem.js');
-const craftSystem = require('./.rpg/craftSystem.js');
-const battleSystem = require('./.rpg/battleSystem.js');
-const dungeonSystem = require('./.rpg/dungeonSystem.js');
-const questSystem = require('./.rpg/questSystem.js');
-const petSystem = require('./.rpg/petSystem.js');
-const factionSystem = require('./.rpg/factionSystem.js');
-
 // Lista de comandos RPG válidos
 const rpgCommandsList = [
-    'eventos', 'registrar', 'perfil',
-    'minerar', 'picareta', 'mochila', 'minerios',
-    'upminerador', 'skillminerador', 'minas',
-    'plantar', 'fazenda', 'colher', 'clima',
-    'plantacoes', 'upfazendeiro', 'skillfazendeiro',
-    'tratamentos', 'ferramentas',
-    'pescar', 'vara', 'iscas', 'peixes',
-    'uppescador', 'skillpescador', 'locais',
-    'equipamentos',
-    'cozinhar', 'receitas', 'ingredientes',
-    'upcozinheiro', 'skillcozinheiro', 'cozinha',
-    'craft', 'craftlist', 'estacoes', 'comprarestacao',
-    'melhorarestacao', 'craftinfo',
-    'batalhar', 'skills', 'usarskill', 'usaritem',
-    'status', 'classe',
+    // Comandos Básicos
+    'registrar', 'perfil', 'inventario',
+    
+    // Sistemas Core
+    'minerar', 'picareta', 'mochila', 'minerios', 'upminerador', 'skillminerador', 'minas',
+    'plantar', 'fazenda', 'colher', 'clima', 'plantacoes', 'upfazendeiro', 'skillfazendeiro', 'tratamentos', 'ferramentas',
+    'pescar', 'vara', 'iscas', 'peixes', 'uppescador', 'skillpescador', 'locais', 'equipamentos',
+    'cozinhar', 'receitas', 'ingredientes', 'upcozinheiro', 'skillcozinheiro', 'cozinha',
+    'craft', 'craftlist', 'estacoes', 'comprarestacao', 'melhorarestacao', 'craftinfo',
+    
+    // Sistemas de Combate
+    'batalhar', 'skills', 'usarskill', 'usaritem', 'status', 'classe',
     'dungeon', 'dungeonlist', 'explorar', 'salaatual',
-    'missoes', 'historia', 'diarias', 'semanais',
-    'pet', 'petinfo', 'treinar', 'habilidade',
+    'raid', 'raidinfo', 'entrarraid',
+    'boss', 'bosslist', 'desafiarboss',
+    
+    // Sistemas de Organização
+    'clan', 'claninfo', 'criarclan', 'convidar', 'expulsar', 'promover', 'rebaixar',
+    'banco', 'depositar', 'sacar', 'construcao', 'melhorar',
     'faccao', 'faccaoinfo', 'guerra', 'territorio',
-    'inventario', 'loja'
+    'pet', 'petinfo', 'treinar', 'habilidade',
+    'gang', 'ganginfo', 'criargang', 'territorio',
+    
+    // Sistemas de Economia
+    'loja', 'comprar', 'vender', 'mercado',
+    'investir', 'portfolio', 'acoes', 'dividendos',
+    'cassino', 'roleta', 'blackjack', 'slots',
+    'transferir', 'carteira', 'extrato',
+    
+    // Sistemas de Personagem
+    'classe', 'subclasse', 'talentos', 'atributos',
+    'carreira', 'trabalhar', 'promover', 'especializar',
+    'profissao', 'profissaoinfo', 'aprenderprof', 'melhorarprof', 'abandonarprof',
+    
+    // Sistemas de Conquistas e Missões
+    'conquistas', 'titulos', 'colecao',
+    'missoes', 'historia', 'diarias', 'semanais',
+    
+    // Sistema de Eventos
+    'eventos', 'eventoinfo', 'participar'
 ];
 
 // Main RPG command handler
@@ -1778,16 +1791,608 @@ const rpgCommands = async (type, nazu, from, sender, info, reply, command, q, pr
         break;
 
         // Comandos Básicos
+        // Achievement System Commands
+        case 'conquistas': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                reply(achievementSystem.formatAchievements(player));
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'titulos': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                reply(achievementSystem.formatTitles(player));
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'colecao': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                reply(achievementSystem.formatCollection(player));
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        // Raid System Commands
+        case 'raid': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                const result = raidSystem.startRaid(player);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'raidinfo': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                reply(raidSystem.formatRaidInfo(player));
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'entrarraid': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                const result = raidSystem.joinRaid(player, q);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        // Boss System Commands
+        case 'boss': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                const result = bossSystem.initiateBossFight(player);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'bosslist': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                reply(bossSystem.formatBossList());
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'desafiarboss': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) return reply('❌ Especifique o boss!');
+                const result = bossSystem.challengeBoss(player, q);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        // Event System Commands
         case 'eventos': {
-        const events = randomEventsSystem.checkForEvents();
-        if (Object.keys(events).length > 0) {
-         reply(randomEventsSystem.formatEventList());
-        }else {
-        reply('Nenhum evento ativo');
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const events = eventSystem.getActiveEvents();
+                if (Object.keys(events).length > 0) {
+                    reply(eventSystem.formatEventList(events));
+                } else {
+                    reply('❌ Nenhum evento ativo no momento!');
+                }
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
         }
-        }
-        break
+        break;
         
+        // Clan System Commands
+        case 'clan': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) {
+                    reply(clanSystem.formatClanList());
+                    return;
+                }
+
+                const [action, ...params] = q.split(' ');
+                switch(action) {
+                    case 'criar':
+                        if (params.length < 2) return reply('❌ Use: /clan criar nome tag');
+                        const [name, tag] = params;
+                        const result = clanSystem.createClan(player, name, tag);
+                        await savePlayer(sender, player);
+                        reply(result.message);
+                        break;
+                    case 'sair':
+                        const leaveResult = clanSystem.leaveClan(player);
+                        await savePlayer(sender, player);
+                        reply(leaveResult.message);
+                        break;
+                    default:
+                        reply('❌ Ação inválida! Use /clan criar ou /clan sair');
+                }
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'claninfo': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!player.clan) return reply('❌ Você não está em um clã!');
+                const clan = clanSystem.clans[player.clan.id];
+                reply(clanSystem.formatClanInfo(clan));
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'banco': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!player.clan) return reply('❌ Você não está em um clã!');
+                
+                if (!q) {
+                    const clan = clanSystem.clans[player.clan.id];
+                    let text = '🏦 *BANCO DO CLÃ*\n\n';
+                    text += `Capacidade: ${clan.bank.capacity}\n\n`;
+                    text += '*Recursos:*\n';
+                    Object.entries(clan.bank.resources).forEach(([resource, amount]) => {
+                        text += `${resource}: ${amount}\n`;
+                    });
+                    reply(text);
+                    return;
+                }
+
+                const [action, resource, amount] = q.split(' ');
+                if (!action || !resource || !amount) return reply('❌ Use: /banco depositar/sacar recurso quantidade');
+
+                const result = action === 'depositar' 
+                    ? clanSystem.depositResource(player, resource, parseInt(amount))
+                    : clanSystem.withdrawResource(player, resource, parseInt(amount));
+                
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'construcao': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!player.clan) return reply('❌ Você não está em um clã!');
+                
+                if (!q) {
+                    let text = '🏗️ *CONSTRUÇÕES DO CLÃ*\n\n';
+                    Object.entries(clanSystem.upgrades).forEach(([id, building]) => {
+                        const clan = clanSystem.clans[player.clan.id];
+                        const level = clan.buildings[id];
+                        text += `${building.name}\n`;
+                        text += `├ Nível: ${level}/${building.maxLevel}\n`;
+                        if (level < building.maxLevel) {
+                            text += `├ Custo: ${building.cost(level + 1)}\n`;
+                            text += `└ Próximo nível: ${Object.entries(building.effect(level + 1))
+                                .map(([stat, value]) => `${stat} +${value * 100}%`)
+                                .join(', ')}\n\n`;
+                        }
+                    });
+                    reply(text);
+                    return;
+                }
+
+                const result = clanSystem.upgradeBuilding(player, q, player.clan.id);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        // Investment System Commands
+        case 'investir': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) {
+                    reply(investmentSystem.formatInvestmentOptions());
+                    return;
+                }
+                const [action, amount] = q.split(' ');
+                const result = investmentSystem.invest(player, action, parseInt(amount));
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'portfolio': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                reply(investmentSystem.formatPortfolio(player));
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'acoes': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) {
+                    reply(investmentSystem.formatStockMarket());
+                    return;
+                }
+                const [action, stock, amount] = q.split(' ');
+                if (action === 'comprar') {
+                    const result = investmentSystem.buyStock(player, stock, parseInt(amount));
+                    await savePlayer(sender, player);
+                    reply(result.message);
+                } else if (action === 'vender') {
+                    const result = investmentSystem.sellStock(player, stock, parseInt(amount));
+                    await savePlayer(sender, player);
+                    reply(result.message);
+                } else {
+                    reply('❌ Use: /acoes comprar/vender acao quantidade');
+                }
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'dividendos': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                const result = investmentSystem.collectDividends(player);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        // Casino System Commands
+        case 'cassino': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                reply(casinoSystem.formatCasinoInfo());
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'roleta': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) return reply('❌ Use: /roleta aposta número');
+                const [bet, number] = q.split(' ');
+                const result = casinoSystem.playRoulette(player, parseInt(bet), parseInt(number));
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'blackjack': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) return reply('❌ Use: /blackjack aposta');
+                const result = casinoSystem.playBlackjack(player, parseInt(q));
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'slots': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) return reply('❌ Use: /slots aposta');
+                const result = casinoSystem.playSlots(player, parseInt(q));
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        // Career System Commands
+        case 'carreira': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) {
+                    reply(careerSystem.formatCareerList());
+                    return;
+                }
+                const result = careerSystem.startCareer(player, q);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'trabalhar': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                const result = careerSystem.work(player);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'promover': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                const result = careerSystem.promote(player);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'especializar': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) {
+                    reply(careerSystem.formatSpecializationList(player));
+                    return;
+                }
+                const result = careerSystem.specialize(player, q);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        // Class System Commands
+        case 'subclasse': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!player.class) return reply('❌ Escolha uma classe principal primeiro!');
+                if (!q) {
+                    reply(classSystem.formatSubclassList(player.class));
+                    return;
+                }
+                const result = classSystem.chooseSubclass(player, q);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'talentos': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!player.class) return reply('❌ Escolha uma classe primeiro!');
+                if (!q) {
+                    reply(classSystem.formatTalentTree(player));
+                    return;
+                }
+                const result = classSystem.learnTalent(player, q);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'atributos': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!player.class) return reply('❌ Escolha uma classe primeiro!');
+                if (!q) {
+                    reply(classSystem.formatAttributes(player));
+                    return;
+                }
+                const [attribute, points] = q.split(' ');
+                const result = classSystem.allocateAttributePoints(player, attribute, parseInt(points));
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        // Gang System Commands
+        case 'gang': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) {
+                    reply(gangSystem.formatGangList());
+                    return;
+                }
+                const [action, ...params] = q.split(' ');
+                switch(action) {
+                    case 'criar':
+                        if (params.length < 1) return reply('❌ Use: /gang criar nome');
+                        const result = gangSystem.createGang(player, params.join(' '));
+                        await savePlayer(sender, player);
+                        reply(result.message);
+                        break;
+                    case 'sair':
+                        const leaveResult = gangSystem.leaveGang(player);
+                        await savePlayer(sender, player);
+                        reply(leaveResult.message);
+                        break;
+                    default:
+                        reply('❌ Ação inválida! Use /gang criar ou /gang sair');
+                }
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'ganginfo': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!player.gang) return reply('❌ Você não está em uma gang!');
+                reply(gangSystem.formatGangInfo(player.gang));
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        case 'criargang': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                if (!q) return reply('❌ Use: /criargang nome');
+                const result = gangSystem.createGang(player, q);
+                await savePlayer(sender, player);
+                reply(result.message);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
+        // Inventory Command
+        case 'inventario': {
+            if (!playerExists(sender)) return reply(`❌ Você não está registrado! Use ${prefix}registrar para começar.`);
+            try {
+                const player = await getPlayer(sender);
+                let text = '🎒 *SEU INVENTÁRIO*\n\n';
+                
+                // Minerais
+                if (player.mining?.minerals) {
+                    text += '*Minerais:*\n';
+                    Object.entries(player.mining.minerals).forEach(([mineral, amount]) => {
+                        text += `${miningSystem.minerals[mineral].emoji} ${miningSystem.minerals[mineral].name}: ${amount}\n`;
+                    });
+                    text += '\n';
+                }
+                
+                // Plantações
+                if (player.farming?.inventory) {
+                    text += '*Plantações:*\n';
+                    Object.entries(player.farming.inventory).forEach(([crop, amount]) => {
+                        text += `${farmingSystem.crops[crop].emoji} ${farmingSystem.crops[crop].name}: ${amount}\n`;
+                    });
+                    text += '\n';
+                }
+                
+                // Peixes
+                if (player.fishing?.inventory) {
+                    text += '*Peixes:*\n';
+                    Object.entries(player.fishing.inventory).forEach(([fish, amount]) => {
+                        text += `${fishingSystem.fishes[fish].emoji} ${fishingSystem.fishes[fish].name}: ${amount}\n`;
+                    });
+                    text += '\n';
+                }
+                
+                // Comidas
+                if (player.cooking?.inventory) {
+                    text += '*Comidas:*\n';
+                    Object.entries(player.cooking.inventory).forEach(([food, amount]) => {
+                        text += `${cookingSystem.recipes[food].emoji} ${cookingSystem.recipes[food].name}: ${amount}\n`;
+                    });
+                    text += '\n';
+                }
+                
+                // Itens Craftados
+                if (player.crafting?.inventory) {
+                    text += '*Itens Craftados:*\n';
+                    Object.entries(player.crafting.inventory).forEach(([item, amount]) => {
+                        text += `${craftSystem.items[item].emoji} ${craftSystem.items[item].name}: ${amount}\n`;
+                    });
+                    text += '\n';
+                }
+                
+                // Equipamentos
+                if (player.equipment) {
+                    text += '*Equipamentos:*\n';
+                    Object.entries(player.equipment).forEach(([slot, item]) => {
+                        if (item) text += `${slot}: ${item.name}\n`;
+                    });
+                }
+                
+                reply(text);
+            } catch (e) {
+                reply('❌ ' + e.message);
+            }
+        }
+        break;
+
         case 'registrar': {
             if (playerExists(sender)) return reply('❌ Você já está registrado!');
             if (!q) return reply(`❌ Digite seu nome. Exemplo: ${prefix}registrar Aventureiro`);
