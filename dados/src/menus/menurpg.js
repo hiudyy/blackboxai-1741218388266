@@ -56,6 +56,17 @@ const menurpg = (prefix) => {
 ┃ ${prefix}usaritem
 ┃ ${prefix}status
 ┃ ${prefix}classe
+┃ ${prefix}subclasse
+┃ ${prefix}talentos
+┃ ${prefix}atributos
+┃
+┃ *RAID & BOSS* 🏰
+┃ ${prefix}raid
+┃ ${prefix}raidinfo
+┃ ${prefix}entrarraid
+┃ ${prefix}boss
+┃ ${prefix}bosslist
+┃ ${prefix}desafiarboss
 ┃
 ┃ *DUNGEON* 🏰
 ┃ ${prefix}dungeon
@@ -63,11 +74,14 @@ const menurpg = (prefix) => {
 ┃ ${prefix}explorar
 ┃ ${prefix}salaatual
 ┃
-┃ *MISSÕES* 📜
+┃ *MISSÕES & CONQUISTAS* 📜
 ┃ ${prefix}missoes
 ┃ ${prefix}historia
 ┃ ${prefix}diarias
 ┃ ${prefix}semanais
+┃ ${prefix}conquistas
+┃ ${prefix}titulos
+┃ ${prefix}colecao
 ┃
 ┃ *PETS* 🐾
 ┃ ${prefix}pet
@@ -75,22 +89,25 @@ const menurpg = (prefix) => {
 ┃ ${prefix}treinar
 ┃ ${prefix}habilidade
 ┃
-┃ *FACÇÕES* ⚔️
+┃ *CLÃ* 🛡️
+┃ ${prefix}clan
+┃ ${prefix}claninfo
+┃ ${prefix}criarclan
+┃ ${prefix}convidar
+┃ ${prefix}expulsar
+┃ ${prefix}promover
+┃ ${prefix}rebaixar
+┃ ${prefix}banco
+┃ ${prefix}construcao
+┃
+┃ *FACÇÕES & GANGS* ⚔️
 ┃ ${prefix}faccao
 ┃ ${prefix}faccaoinfo
 ┃ ${prefix}guerra
 ┃ ${prefix}territorio
-┃
-┃ *CLÃ* 🛡️
-┃ ${prefix}clan
-┃ ${prefix}claninfo
-┃ ${prefix}banco
-┃ ${prefix}construcao
-┃
-┃ *EVENTOS* 🎉
-┃ ${prefix}eventos
-┃ ${prefix}eventoinfo
-┃ ${prefix}participar
+┃ ${prefix}gang
+┃ ${prefix}ganginfo
+┃ ${prefix}criargang
 ┃
 ┃ *ECONOMIA* 💰
 ┃ ${prefix}loja
@@ -100,13 +117,36 @@ const menurpg = (prefix) => {
 ┃ ${prefix}depositar
 ┃ ${prefix}sacar
 ┃ ${prefix}transferir
+┃ ${prefix}carteira
+┃ ${prefix}extrato
 ┃
-┃ *PROFISSÕES* 🎓
+┃ *INVESTIMENTOS* 📈
+┃ ${prefix}investir
+┃ ${prefix}portfolio
+┃ ${prefix}acoes
+┃ ${prefix}dividendos
+┃
+┃ *CASSINO* 🎲
+┃ ${prefix}cassino
+┃ ${prefix}roleta
+┃ ${prefix}blackjack
+┃ ${prefix}slots
+┃
+┃ *PROFISSÕES & CARREIRA* 🎓
 ┃ ${prefix}profissao
 ┃ ${prefix}profissaoinfo
 ┃ ${prefix}aprenderprof
 ┃ ${prefix}melhorarprof
 ┃ ${prefix}abandonarprof
+┃ ${prefix}carreira
+┃ ${prefix}trabalhar
+┃ ${prefix}promover
+┃ ${prefix}especializar
+┃
+┃ *EVENTOS* 🎉
+┃ ${prefix}eventos
+┃ ${prefix}eventoinfo
+┃ ${prefix}participar
 ┃
 ┃ *GERAL* 📋
 ┃ ${prefix}registrar
